@@ -1,0 +1,207 @@
+/*
+ * NeuralAura — Global stylesheet
+ * Tailwind CSS base + custom animations, glass-card system, and utilities.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────
+   Base resets & defaults
+   ───────────────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #06080f;
+    color: #e2e8f0;
+  }
+
+  ::selection {
+    background: rgba(124, 58, 237, 0.35);
+    color: #fff;
+  }
+
+  /* Custom scrollbar — minimal chrome */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
+
+/* ─────────────────────────────────────────────────
+   Font utility (used as className="font-display")
+   ───────────────────────────────────────────────── */
+@layer utilities {
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+/* ─────────────────────────────────────────────────
+   Glow Card — Animated conic-gradient border ring
+   Uses @property for smooth CSS angle animation.
+   ───────────────────────────────────────────────── */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.glow-card {
+  position: relative;
+  border-radius: 20px;
+}
+
+/* Rotating rainbow border — hidden by default, fades in on hover */
+.glow-card-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--border-angle),
+    rgba(124, 58, 237, 0.55),
+    rgba(59, 130, 246, 0.35),
+    rgba(6, 182, 212, 0.40),
+    rgba(16, 185, 129, 0.30),
+    rgba(244, 63, 94, 0.30),
+    rgba(124, 58, 237, 0.55)
+  );
+  /* Mask trick: show gradient only in the border ring */
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotate-border 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.glow-card:hover .glow-card-border {
+  opacity: 1;
+}
+
+/* Inner glass content panel */
+.glow-card-content {
+  position: relative;
+  background: rgba(10, 14, 26, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: inherit;
+  height: 100%;
+  overflow: hidden;
+  transition: border-color 0.4s ease;
+}
+
+.glow-card:hover .glow-card-content {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+@keyframes rotate-border {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/* ─────────────────────────────────────────────────
+   Floating Orb animation (used by AnimatedBackground)
+   ───────────────────────────────────────────────── */
+@keyframes float-orb {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -45px) scale(1.06);
+  }
+  50% {
+    transform: translate(-25px, 22px) scale(0.94);
+  }
+  75% {
+    transform: translate(40px, 35px) scale(1.03);
+  }
+}
+
+.animate-float-orb {
+  animation: float-orb 20s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────
+   Magnetic Button
+   ───────────────────────────────────────────────── */
+.magnetic-btn {
+  position: relative;
+  padding: 12px 28px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(59, 130, 246, 0.18));
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  color: #e2e8f0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: background 0.35s, border-color 0.35s, box-shadow 0.35s;
+}
+
+.magnetic-btn:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.32), rgba(59, 130, 246, 0.32));
+  border-color: rgba(124, 58, 237, 0.50);
+  box-shadow:
+    0 0 32px rgba(124, 58, 237, 0.18),
+    0 0 64px rgba(59, 130, 246, 0.08);
+}
+
+.magnetic-btn:active {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.40), rgba(59, 130, 246, 0.40));
+}
+
+/* ─────────────────────────────────────────────────
+   Thin scrollbar utility (for the history list)
+   ───────────────────────────────────────────────── */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* ─────────────────────────────────────────────────
+   Tabular-nums utility (monospaced digits)
+   ───────────────────────────────────────────────── */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
